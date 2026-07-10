@@ -4,6 +4,7 @@ import { useI18n } from "../i18n";
 import { useAuth } from "../context/AuthContext";
 import { api } from "../api/client";
 import TimerDisplay from "../components/TimerDisplay";
+import Confetti from "../components/Confetti";
 
 const STAGE = { SETUP: "setup", RUNNING: "running", RESULT: "result" };
 
@@ -174,8 +175,10 @@ export default function Practice() {
   }
 
   // STAGE.RESULT
+  const scoreRatio = result.totalCount ? result.correctCount / result.totalCount : 0;
   return (
     <div className="container page" style={{ maxWidth: 480 }}>
+      {scoreRatio >= 0.8 && <Confetti />}
       <div className="card">
         <h2 style={{ marginBottom: 20 }}>{t.practice.resultTitle}</h2>
         <p style={{ fontSize: 18, marginBottom: 8 }}>

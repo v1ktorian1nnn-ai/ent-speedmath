@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useI18n } from "../i18n";
 import { api } from "../api/client";
+import Spinner from "../components/Spinner";
 
 export default function Leaderboard() {
   const { t } = useI18n();
@@ -16,7 +17,7 @@ export default function Leaderboard() {
       <div className="card">
         <h2 style={{ marginBottom: 20 }}>{t.leaderboard.title}</h2>
         {error && <div className="error-text">{error}</div>}
-        {!rows && !error && <p>{t.common.loading}</p>}
+        {!rows && !error && <Spinner label={t.common.loading} />}
         {rows && rows.length === 0 && <p style={{ color: "var(--text-muted)" }}>{t.leaderboard.empty}</p>}
         {rows && rows.length > 0 && (
           <table>

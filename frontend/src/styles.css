@@ -152,6 +152,7 @@ button {
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 24px;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.02) inset, 0 8px 24px rgba(0, 0, 0, 0.25);
 }
 
 .page {
@@ -169,7 +170,7 @@ button {
   padding: 11px 20px;
   font-size: 14px;
   font-weight: 600;
-  transition: transform 0.08s ease, background 0.15s ease;
+  transition: transform 0.12s ease, background 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
 }
 
 .btn:active {
@@ -183,6 +184,8 @@ button {
 
 .btn-primary:hover {
   background: #ffc04d;
+  box-shadow: 0 0 0 4px rgba(255, 176, 32, 0.18);
+  transform: translateY(-1px);
 }
 
 .btn-secondary {
@@ -193,6 +196,7 @@ button {
 
 .btn-secondary:hover {
   border-color: var(--accent);
+  transform: translateY(-1px);
 }
 
 .btn-danger {
@@ -383,6 +387,34 @@ th {
 .hero {
   padding: 64px 0 40px;
   text-align: center;
+  animation: hero-in 0.5s ease both;
+}
+
+@keyframes hero-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  color: var(--accent);
+  background: rgba(255, 176, 32, 0.1);
+  border: 1px solid var(--accent-dim);
+  padding: 6px 14px;
+  border-radius: 999px;
+  margin-bottom: 20px;
+  text-transform: uppercase;
 }
 
 .hero h1 {
@@ -401,11 +433,231 @@ th {
   margin: 16px auto 28px;
 }
 
+.demo-card {
+  max-width: 560px;
+  margin: 8px auto 32px;
+  text-align: left;
+  animation: hero-in 0.6s ease 0.1s both;
+}
+
+.demo-card-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+}
+
+.demo-card-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.demo-card-problem {
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.demo-card .timer-display {
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+.demo-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.demo-option {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.topic-pills {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  max-width: 640px;
+  margin: 0 auto 48px;
+  animation: hero-in 0.6s ease 0.18s both;
+}
+
+.topic-pill {
+  font-size: 12px;
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 6px 12px;
+}
+
 .mode-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 20px;
   margin-top: 24px;
+}
+
+/* --- Общая полировка: фокус, переходы, hover --- */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.card {
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+
+.option {
+  transition: border-color 0.12s ease, background 0.12s ease, transform 0.08s ease;
+}
+
+.option:active {
+  transform: scale(0.99);
+}
+
+/* --- Секундомер на главной (сигнатурный элемент) --- */
+.hero-layout {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 48px;
+  flex-wrap: wrap;
+  text-align: left;
+}
+
+.hero-layout .hero-text {
+  max-width: 480px;
+}
+
+.hero-layout .hero-text h1,
+.hero-layout .hero-text p {
+  text-align: left;
+  margin-left: 0;
+}
+
+.hero-stopwatch {
+  width: 220px;
+  height: 220px;
+  flex-shrink: 0;
+}
+
+.hero-stopwatch-hand {
+  animation: sweep 8s linear infinite;
+}
+
+@keyframes sweep {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-stopwatch-hand {
+    animation: none;
+  }
+}
+
+@media (max-width: 760px) {
+  .hero-layout {
+    flex-direction: column;
+    text-align: center;
+  }
+  .hero-layout .hero-text {
+    text-align: center;
+  }
+  .hero-layout .hero-text h1,
+  .hero-layout .hero-text p {
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .hero-stopwatch {
+    width: 160px;
+    height: 160px;
+  }
+}
+
+/* --- Конфетти --- */
+.confetti-layer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 200;
+}
+
+.confetti-piece {
+  position: absolute;
+  top: -20px;
+  width: 8px;
+  height: 14px;
+  border-radius: 2px;
+  opacity: 0.9;
+  animation-name: confetti-fall;
+  animation-timing-function: ease-in;
+  animation-fill-mode: forwards;
+}
+
+@keyframes confetti-fall {
+  0% {
+    transform: translate(0, -20px) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(var(--drift), 110vh) rotate(360deg);
+    opacity: 0.4;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .confetti-layer {
+    display: none;
+  }
+}
+
+/* --- Спиннер --- */
+.spinner-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.spinner {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  border-top-color: var(--accent);
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    animation: none;
+  }
 }
 
 @media (max-width: 640px) {
@@ -448,5 +700,10 @@ th {
 
   .lang-switch button {
     padding: 5px 9px;
+  }
+
+  .demo-card-row {
+    flex-direction: column;
+    align-items: flex-start;
   }
 }

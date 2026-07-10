@@ -5,6 +5,7 @@ import { useAuth } from "../context/AuthContext";
 import { api } from "../api/client";
 import { getSocket } from "../socket";
 import TimerDisplay from "../components/TimerDisplay";
+import Confetti from "../components/Confetti";
 
 const STAGE = { MENU: "menu", QUEUED: "queued", RACING: "racing", DONE_WAITING: "done_waiting", RESULTS: "results" };
 
@@ -206,8 +207,12 @@ export default function Duel() {
   }
 
   // STAGE.RESULTS
+  const myResult = results.find((r) => r.userId === user.id);
+  const won = myResult?.place === 1;
+
   return (
     <div className="container page" style={{ maxWidth: 560 }}>
+      {won && <Confetti />}
       <div className="card">
         <h2 style={{ marginBottom: 20 }}>{t.duel.resultsTitle}</h2>
         <table>

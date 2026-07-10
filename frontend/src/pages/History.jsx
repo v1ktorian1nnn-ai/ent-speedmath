@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { useI18n } from "../i18n";
 import { useAuth } from "../context/AuthContext";
 import { api } from "../api/client";
+import Spinner from "../components/Spinner";
 
 export default function History() {
   const { t } = useI18n();
@@ -29,7 +30,7 @@ export default function History() {
       <div className="card">
         <h2 style={{ marginBottom: 20 }}>{t.history.title}</h2>
         {error && <div className="error-text">{error}</div>}
-        {!rows && !error && <p>{t.common.loading}</p>}
+        {!rows && !error && <Spinner label={t.common.loading} />}
         {rows && rows.length === 0 && <p style={{ color: "var(--text-muted)" }}>{t.history.empty}</p>}
         {rows && rows.length > 0 && (
           <table>
