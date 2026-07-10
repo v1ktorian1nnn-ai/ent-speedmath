@@ -116,6 +116,33 @@ button {
   text-decoration: none;
 }
 
+.brand-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.admin-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--success);
+  background: rgba(61, 220, 151, 0.12);
+  border: 1px solid rgba(61, 220, 151, 0.35);
+  border-radius: 999px;
+  padding: 5px 11px;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background 0.15s ease;
+}
+
+.admin-badge:hover,
+.admin-badge.active {
+  background: rgba(61, 220, 151, 0.22);
+}
+
 .brand-mark {
   color: var(--accent);
   flex-shrink: 0;

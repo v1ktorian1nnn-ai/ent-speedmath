@@ -52,10 +52,17 @@ export default function Navbar() {
 
   return (
     <div className="navbar">
-      <Link to="/" className="brand">
-        <BrandMark />
-        {t.brand}
-      </Link>
+      <div className="brand-group">
+        <Link to="/" className="brand">
+          <BrandMark />
+          {t.brand}
+        </Link>
+        {user?.isAdmin && (
+          <Link to="/admin" className={`admin-badge ${isActive("/admin") ? "active" : ""}`}>
+            <IconShield /> {t.nav.admin}
+          </Link>
+        )}
+      </div>
       <nav>
         <Link to="/practice" className={`nav-link ${isActive("/practice") ? "active" : ""}`}>
           <IconTimer /> {t.nav.practice}
@@ -66,11 +73,6 @@ export default function Navbar() {
         <Link to="/leaderboard" className={`nav-link ${isActive("/leaderboard") ? "active" : ""}`}>
           <IconTrophy /> {t.nav.leaderboard}
         </Link>
-        {user?.isAdmin && (
-          <Link to="/admin" className={`nav-link ${isActive("/admin") ? "active" : ""}`}>
-            <IconShield /> {t.nav.admin}
-          </Link>
-        )}
 
         {user ? (
           <div className="account-menu" ref={menuRef}>
