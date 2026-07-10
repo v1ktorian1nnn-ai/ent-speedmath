@@ -1,0 +1,89 @@
+// Схема базы данных. По умолчанию — PostgreSQL (для прод-хостинга, напр. Neon).
+// Для локальной разработки без установки Postgres можно временно поменять
+// provider на "sqlite" и url на "file:./dev.db" — см. README.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           Int       @id @default(autoincrement())
+  email        String    @unique
+  username     String    @unique
+  passwordHash String
+  isAdmin      Boolean   @default(false)
+  createdAt    DateTime  @default(now())
+
+  sessions     PracticeSession[]
+  attempts     PracticeAttempt[]
+  duelEntries  DuelParticipant[]
+}
+
+model Problem {
+  id            Int      @id @default(autoincrement())
+  topic         String   // напр. "Тригонометрия", "Производная"
+  difficulty    Int      @default(1) // 1..5
+  statement     String   // текст условия (можно с LaTeX-разметкой $$...$$)
+  imageUrl      String?  // путь к картинке, если есть
+  options       Json     // массив строк-вариантов ответа, напр. ["12", "14", "16", "18"]
+  correctIndex  Int      // индекс правильного варианта в options
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+
+  attempts      PracticeAttempt[]
+}
+
+model PracticeSession {
+  id            Int       @id @default(autoincrement())
+  userId        Int
+  user          User      @relation(fields: [userId], references: [id])
+  startedAt     DateTime  @default(now())
+  finishedAt    DateTime?
+  totalTimeMs   Int?
+  correctCount  Int?
+  totalCount    Int?
+
+  attempts      PracticeAttempt[]
+}
+
+model PracticeAttempt {
+  id          Int             @id @default(autoincrement())
+  sessionId   Int
+  session     PracticeSession @relation(fields: [sessionId], references: [id])
+  userId      Int
+  user        User            @relation(fields: [userId], references: [id])
+  problemId   Int
+  problem     Problem         @relation(fields: [problemId], references: [id])
+  chosenIndex Int?
+  correct     Boolean
+  timeMs      Int
+  createdAt   DateTime        @default(now())
+}
+
+model Duel {
+  id           Int               @id @default(autoincrement())
+  mode         String            // "1v1" | "group"
+  status       String            @default("waiting") // waiting | active | finished
+  problemIds   Json              // упорядоченный массив id задач
+  createdAt    DateTime          @default(now())
+  finishedAt   DateTime?
+
+  participants DuelParticipant[]
+}
+
+model DuelParticipant {
+  id           Int       @id @default(autoincrement())
+  duelId       Int
+  duel         Duel      @relation(fields: [duelId], references: [id])
+  userId       Int
+  user         User      @relation(fields: [userId], references: [id])
+  finishedAt   DateTime?
+  totalTimeMs  Int?
+  correctCount Int?
+  place        Int?
+}
