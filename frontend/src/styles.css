@@ -155,6 +155,7 @@ button {
   letter-spacing: 0.04em;
   color: var(--accent-text);
   text-decoration: none;
+  text-shadow: 0 0 16px rgba(255, 176, 32, 0.35);
 }
 
 .brand-group {
@@ -442,6 +443,23 @@ button {
   transform: translateY(-1px);
 }
 
+/* Неоновое свечение — только для акцентной CTA-кнопки на главной,
+   чтобы эффект оставался особенным, а не применялся ко всем кнопкам подряд */
+.btn-glow {
+  box-shadow: 0 0 18px -2px rgba(255, 176, 32, 0.55), 0 0 2px rgba(255, 176, 32, 0.4);
+  transition: box-shadow 0.2s ease, background 0.15s ease, transform 0.15s ease;
+}
+
+.btn-glow:hover {
+  box-shadow: 0 0 30px 2px rgba(255, 176, 32, 0.75), 0 0 6px rgba(255, 176, 32, 0.6);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn-glow {
+    transition: none;
+  }
+}
+
 .btn-secondary {
   background: var(--surface-2);
   color: var(--text);
@@ -642,6 +660,8 @@ th {
   padding: 64px 0 40px;
   text-align: center;
   animation: hero-in 0.5s ease both;
+  position: relative;
+  overflow: hidden;
 }
 
 @keyframes hero-in {
@@ -793,15 +813,18 @@ textarea:focus-visible {
   border-top: 1px solid var(--border);
 }
 
-.step-item .step-num {
-  display: inline-block;
-  font-family: var(--font-mono);
-  font-size: 13px;
+.step-item .step-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
   color: var(--accent-text);
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  padding: 3px 10px;
-  margin-bottom: 12px;
+  background: rgba(255, 176, 32, 0.1);
+  border: 1px solid var(--accent-dim);
+  border-radius: 50%;
+  margin-bottom: 14px;
+  box-shadow: 0 0 14px -4px rgba(255, 176, 32, 0.5);
 }
 
 .step-item h3 {
@@ -868,6 +891,8 @@ textarea:focus-visible {
   gap: 48px;
   flex-wrap: wrap;
   text-align: left;
+  position: relative;
+  z-index: 1;
 }
 
 .hero-layout .hero-text {
@@ -884,10 +909,94 @@ textarea:focus-visible {
   width: 220px;
   height: 220px;
   flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+  cursor: pointer;
 }
 
 .hero-stopwatch-hand {
   animation: sweep 8s linear infinite;
+}
+
+.hero-stopwatch-hand--manual {
+  animation: none;
+  transition: transform 0.35s cubic-bezier(0.34, 1.2, 0.4, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-stopwatch-hand--manual {
+    transition: none;
+  }
+}
+
+/* --- Импульсы по фоновой сетке (декоративный слой в hero) --- */
+.grid-pulses {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.pulse-line {
+  position: absolute;
+  opacity: 0;
+}
+
+.pulse-h {
+  left: -20%;
+  width: 40%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 176, 32, 0.55), transparent);
+  animation: pulse-move-h 6s ease-in-out infinite;
+}
+
+.pulse-v {
+  top: -20%;
+  height: 40%;
+  width: 1px;
+  background: linear-gradient(180deg, transparent, rgba(61, 220, 151, 0.5), transparent);
+  animation: pulse-move-v 6s ease-in-out infinite;
+}
+
+@keyframes pulse-move-h {
+  0% {
+    transform: translateX(0%);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  85% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(320%);
+    opacity: 0;
+  }
+}
+
+@keyframes pulse-move-v {
+  0% {
+    transform: translateY(0%);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  85% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(320%);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .grid-pulses {
+    display: none;
+  }
 }
 
 @keyframes sweep {

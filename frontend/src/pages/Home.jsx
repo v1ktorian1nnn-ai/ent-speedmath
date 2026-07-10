@@ -2,12 +2,15 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { useI18n } from "../i18n";
 import HeroStopwatch from "../components/HeroStopwatch";
+import GridPulses from "../components/GridPulses";
+import { IconTimer, IconSwords, IconTrophy } from "../components/Icons";
 
 export default function Home() {
   const { t } = useI18n();
   return (
     <div className="container">
       <div className="hero">
+        <GridPulses />
         <div className="hero-layout">
           <HeroStopwatch />
           <div className="hero-text">
@@ -16,7 +19,7 @@ export default function Home() {
             </h1>
             <p>{t.hero.subtitle}</p>
             <div className="mode-grid" style={{ maxWidth: 420 }}>
-              <Link to="/practice" className="btn btn-primary">
+              <Link to="/practice" className="btn btn-primary btn-glow">
                 {t.hero.practiceBtn}
               </Link>
               <Link to="/duel" className="btn btn-secondary">
@@ -29,17 +32,23 @@ export default function Home() {
 
       <div className="steps-row">
         <div className="step-item">
-          <span className="step-num">01</span>
+          <span className="step-icon">
+            <IconTimer width={20} height={20} />
+          </span>
           <h3>{t.hero.step1Title}</h3>
           <p>{t.hero.step1Text}</p>
         </div>
         <div className="step-item">
-          <span className="step-num">02</span>
+          <span className="step-icon">
+            <IconSwords width={20} height={20} />
+          </span>
           <h3>{t.hero.step2Title}</h3>
           <p>{t.hero.step2Text}</p>
         </div>
         <div className="step-item">
-          <span className="step-num">03</span>
+          <span className="step-icon">
+            <IconTrophy width={20} height={20} />
+          </span>
           <h3>{t.hero.step3Title}</h3>
           <p>{t.hero.step3Text}</p>
         </div>
