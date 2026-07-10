@@ -91,4 +91,48 @@ router.get("/history", requireAuth, async (req, res) => {
   res.json(sessions);
 });
 
+// Архив ошибок: задачи, последний ответ на которые был неверным.
+// Если позже пользователь решит задачу верно (в обычной тренировке),
+// она сама пропадёт из этого списка — учитывается именно ПОСЛЕДНЯЯ попытка.
+router.get("/mistakes", requireAuth, async (req, res) => {
+  const attempts = await prisma.practiceAttempt.findMany({
+    where: { userId: req.user.id },
+    orderBy: { createdAt: "desc" },
+    take: 300,
+    select: { problemId: true, correct: true },
+  });
+
+  const latestByProblem = new Map();
+  for (const a of attempts) {
+    if (!latestByProblem.has(a.problemId)) {
+      latestByProblem.set(a.problemId, a.correct);
+    }
+  }
+
+  const mistakeIds = [...latestByProblem.entries()]
+    .filter(([, correct]) => !correct)
+    .map(([problemId]) => problemId)
+    .slice(0, 50);
+
+  if (mistakeIds.length === 0) return res.json([]);
+
+  const problems = await prisma.problem.findMany({ where: { id: { in: mistakeIds } } });
+  const safe = problems.map(({ correctIndex, ...rest }) => rest);
+  // Сохраняем порядок "от самой недавней ошибки к более старой"
+  const ordered = mistakeIds.map((id) => safe.find((p) => p.id === id)).filter(Boolean);
+  res.json(ordered);
+});
+
+// Проверка ответа в режиме "работы над ошибками" — без таймера и без
+// влияния на статистику/рейтинг, просто сверка с правильным вариантом.
+router.post("/check-answer", requireAuth, async (req, res) => {
+  const { problemId, chosenIndex } = req.body;
+
+  const problem = await prisma.problem.findUnique({ where: { id: problemId } });
+  if (!problem) return res.status(404).json({ error: "Задача не найдена" });
+
+  const correct = problem.correctIndex === chosenIndex;
+  res.json({ correct, correctIndex: problem.correctIndex });
+});
+
 module.exports = router;

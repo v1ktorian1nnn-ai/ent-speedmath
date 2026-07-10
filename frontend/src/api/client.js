@@ -39,6 +39,8 @@ export const api = {
   finishSession: (sessionId) => request("/api/practice/finish", { method: "POST", body: { sessionId } }),
   leaderboard: () => request("/api/practice/leaderboard"),
   history: () => request("/api/practice/history"),
+  mistakes: () => request("/api/practice/mistakes"),
+  checkAnswer: (payload) => request("/api/practice/check-answer", { method: "POST", body: payload }),
 
   adminList: () => request("/api/problems/admin/all"),
   adminCreate: (formData) => request("/api/problems/admin", { method: "POST", body: formData, isForm: true }),

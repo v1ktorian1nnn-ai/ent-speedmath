@@ -8,6 +8,7 @@ import Practice from "./pages/Practice";
 import Duel from "./pages/Duel";
 import Leaderboard from "./pages/Leaderboard";
 import History from "./pages/History";
+import Mistakes from "./pages/Mistakes";
 import Profile from "./pages/Profile";
 import Admin from "./pages/Admin";
 
@@ -23,6 +24,7 @@ export default function App() {
         <Route path="/duel" element={<Duel />} />
         <Route path="/leaderboard" element={<Leaderboard />} />
         <Route path="/history" element={<History />} />
+        <Route path="/mistakes" element={<Mistakes />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/admin" element={<Admin />} />
       </Routes>

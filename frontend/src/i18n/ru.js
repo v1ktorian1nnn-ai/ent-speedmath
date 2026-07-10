@@ -6,6 +6,7 @@ export default {
     leaderboard: "Рейтинг",
     history: "История",
     profile: "Профиль",
+    mistakes: "Ошибки",
     admin: "Админка",
     login: "Войти",
     register: "Регистрация",
@@ -74,6 +75,10 @@ export default {
     scoreCorrect: "Верных",
     time: "Время",
     backToMenu: "В меню",
+    rematch: "Предложить реванш",
+    rematchWaiting: "Ждём остальных для реванша…",
+    rematchReady: "готов(а) к реваншу",
+    reactions: "Реакции",
   },
   leaderboard: {
     title: "Общий рейтинг",
@@ -108,6 +113,14 @@ export default {
     newPassword: "Новый пароль",
     save: "Сохранить пароль",
     success: "Пароль успешно изменён",
+  },
+  mistakes: {
+    title: "Работа над ошибками",
+    subtitle: "Задачи, в которых ты недавно ошибся. Без таймера — просто разберись спокойно.",
+    empty: "Ошибок нет! Либо ты всё решаешь верно, либо ещё не проходил(а) тренировку.",
+    next: "Следующая задача",
+    done: "Ты разобрал(а) все задачи из списка 🎉",
+    backToPractice: "Вернуться к тренировке",
   },
   common: {
     loading: "Загрузка…",

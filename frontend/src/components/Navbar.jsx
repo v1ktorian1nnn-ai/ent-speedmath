@@ -10,6 +10,7 @@ import {
   IconShield,
   IconUser,
   IconHistory,
+  IconTarget,
   IconLogout,
   IconChevronDown,
   IconLogin,
@@ -92,6 +93,9 @@ export default function Navbar() {
                 </Link>
                 <Link to="/history" className={isActive("/history") ? "active" : ""}>
                   <IconHistory /> {t.nav.history}
+                </Link>
+                <Link to="/mistakes" className={isActive("/mistakes") ? "active" : ""}>
+                  <IconTarget /> {t.nav.mistakes}
                 </Link>
                 <button
                   className="logout-item"

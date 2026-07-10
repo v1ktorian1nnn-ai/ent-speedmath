@@ -6,6 +6,11 @@ const PROBLEMS_PER_DUEL = 8;
 const GROUP_MIN_PLAYERS = 3;
 const GROUP_MAX_PLAYERS = 6;
 const GROUP_WAIT_MS = 15000; // сколько ждём набора группы, прежде чем стартовать с тем, что есть
+const FINISHED_DUEL_TTL_MS = 10 * 60 * 1000; // сколько после дуэли ещё можно предложить реванш
+
+// Набор разрешённых быстрых фраз — намеренно закрытый список (не свободный
+// ввод текста), чтобы не городить модерацию и не пускать спам/оскорбления.
+const ALLOWED_REACTIONS = ["👍", "🔥", "😅", "🤝", "ГГ!", "Ух, это было близко!", "Математика — сила!"];
 
 // Очереди ожидания матчмейкинга, отдельно для 1v1 и group
 const queue1v1 = []; // [{ socket, user }]
@@ -14,6 +19,10 @@ let groupTimer = null;
 
 // duelId -> { duel, sockets: Map(userId -> socket), problems, progress: Map(userId -> {index, correctCount}) }
 const activeDuels = new Map();
+
+// duelId -> { mode, players: [{ socket, user }], rematchSet: Set(userId) }
+// Хранится недолго после завершения дуэли — только чтобы можно было предложить реванш.
+const finishedDuels = new Map();
 
 let ioRef = null;
 
@@ -82,6 +91,45 @@ function registerDuelHandlers(io) {
       if (progress.index >= entry.problems.length) {
         progress.finishedAt = Date.now();
         await finishParticipantIfDone(io, duelId, socket.user.id);
+      }
+    });
+
+    // Быстрая фраза/эмодзи — во время гонки или на экране результатов
+    socket.on("duel:reaction", ({ duelId, text }) => {
+      if (!ALLOWED_REACTIONS.includes(text)) return;
+      io.to(`duel:${duelId}`).emit("duel:reactionReceived", {
+        userId: socket.user.id,
+        username: socket.user.username,
+        text,
+      });
+    });
+
+    // Запрос реванша — стартуем новую дуэль тем же составом, как только
+    // согласились все ещё подключённые участники прошлой дуэли.
+    socket.on("duel:rematch", async ({ duelId }) => {
+      const record = finishedDuels.get(duelId);
+      if (!record) return;
+
+      const isParticipant = record.players.some((p) => p.user.id === socket.user.id);
+      if (!isParticipant) return;
+
+      record.rematchSet.add(socket.user.id);
+
+      io.to(`duel:${duelId}`).emit("duel:rematchWaiting", {
+        userId: socket.user.id,
+        username: socket.user.username,
+        readyCount: record.rematchSet.size,
+        total: record.players.length,
+      });
+
+      const connectedPlayers = record.players.filter((p) => p.socket.connected);
+      const allReady =
+        connectedPlayers.length >= 2 &&
+        connectedPlayers.every((p) => record.rematchSet.has(p.user.id));
+
+      if (allReady) {
+        finishedDuels.delete(duelId);
+        await createAndStartDuel(io, record.mode, connectedPlayers);
       }
     });
 
@@ -219,6 +267,14 @@ async function finalizeDuel(io, duelId) {
     })),
   });
 
+  // Сохраняем состав участников на некоторое время — вдруг кто-то предложит реванш
+  finishedDuels.set(duelId, {
+    mode: entry.duel.mode,
+    players: [...entry.sockets.entries()].map(([userId, socket]) => ({ socket, user: socket.user })),
+    rematchSet: new Set(),
+  });
+  setTimeout(() => finishedDuels.delete(duelId), FINISHED_DUEL_TTL_MS);
+
   activeDuels.delete(duelId);
 }
 
@@ -236,4 +292,4 @@ setInterval(() => {
   }
 }, 30000);
 
-module.exports = { registerDuelHandlers };
+module.exports = { registerDuelHandlers, ALLOWED_REACTIONS };

@@ -6,6 +6,7 @@ export default {
     leaderboard: "Рейтинг",
     history: "Тарих",
     profile: "Профиль",
+    mistakes: "Қателер",
     admin: "Әкімші",
     login: "Кіру",
     register: "Тіркелу",
@@ -74,6 +75,10 @@ export default {
     scoreCorrect: "Дұрыс",
     time: "Уақыт",
     backToMenu: "Мәзірге оралу",
+    rematch: "Реванш ұсыну",
+    rematchWaiting: "Реванш үшін басқаларды күтудеміз…",
+    rematchReady: "реваншқа дайын",
+    reactions: "Реакциялар",
   },
   leaderboard: {
     title: "Жалпы рейтинг",
@@ -108,6 +113,14 @@ export default {
     newPassword: "Жаңа құпия сөз",
     save: "Құпия сөзді сақтау",
     success: "Құпия сөз сәтті ауыстырылды",
+  },
+  mistakes: {
+    title: "Қателермен жұмыс",
+    subtitle: "Жақында қателескен есептер. Уақыт жоқ — асықпай талда.",
+    empty: "Қате жоқ! Не бәрін дұрыс шешесің, не әлі жаттығу өтпедің.",
+    next: "Келесі есеп",
+    done: "Барлық есепті талдап шықтың 🎉",
+    backToPractice: "Жаттығуға оралу",
   },
   common: {
     loading: "Жүктелуде…",

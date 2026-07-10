@@ -9,6 +9,22 @@ import Confetti from "../components/Confetti";
 
 const STAGE = { MENU: "menu", QUEUED: "queued", RACING: "racing", DONE_WAITING: "done_waiting", RESULTS: "results" };
 
+// ВАЖНО: должно совпадать со списком ALLOWED_REACTIONS на бэкенде
+// (backend/src/sockets/duel.js) — сервер отбрасывает всё, чего нет в списке.
+const REACTIONS = ["👍", "🔥", "😅", "🤝", "ГГ!", "Ух, это было близко!", "Математика — сила!"];
+
+function ReactionBar({ onSend }) {
+  return (
+    <div className="reaction-bar">
+      {REACTIONS.map((r) => (
+        <button key={r} className="reaction-btn" onClick={() => onSend(r)}>
+          {r}
+        </button>
+      ))}
+    </div>
+  );
+}
+
 export default function Duel() {
   const { t } = useI18n();
   const { user } = useAuth();
@@ -27,7 +43,12 @@ export default function Duel() {
   const [problemStart, setProblemStart] = useState(Date.now());
   const [results, setResults] = useState(null);
 
+  const [incomingReactions, setIncomingReactions] = useState([]); // [{id, username, text}]
+  const [rematchRequested, setRematchRequested] = useState(false);
+  const [rematchStatus, setRematchStatus] = useState(null); // { readyCount, total }
+
   const socketRef = useRef(null);
+  const reactionIdRef = useRef(0);
 
   useEffect(() => {
     if (!user) return;
@@ -44,6 +65,9 @@ export default function Duel() {
       setFeedback(null);
       setProblemStart(Date.now());
       setProgressByUser({});
+      setRematchRequested(false);
+      setRematchStatus(null);
+      setIncomingReactions([]);
       setStage(STAGE.RACING);
     });
 
@@ -60,11 +84,25 @@ export default function Duel() {
       setStage(STAGE.RESULTS);
     });
 
+    socket.on("duel:reactionReceived", ({ username, text }) => {
+      const id = ++reactionIdRef.current;
+      setIncomingReactions((prev) => [...prev, { id, username, text }]);
+      setTimeout(() => {
+        setIncomingReactions((prev) => prev.filter((r) => r.id !== id));
+      }, 3500);
+    });
+
+    socket.on("duel:rematchWaiting", ({ readyCount, total }) => {
+      setRematchStatus({ readyCount, total });
+    });
+
     return () => {
       socket.off("duel:start");
       socket.off("duel:progress");
       socket.off("duel:answerResult");
       socket.off("duel:results");
+      socket.off("duel:reactionReceived");
+      socket.off("duel:rematchWaiting");
       socket.disconnect();
     };
   }, [user]);
@@ -109,6 +147,26 @@ export default function Duel() {
     setProblemStart(Date.now());
   };
 
+  const sendReaction = (text) => {
+    socketRef.current.emit("duel:reaction", { duelId, text });
+  };
+
+  const requestRematch = () => {
+    setRematchRequested(true);
+    socketRef.current.emit("duel:rematch", { duelId });
+  };
+
+  const ReactionToasts = () =>
+    incomingReactions.length > 0 && (
+      <div className="reaction-toasts">
+        {incomingReactions.map((r) => (
+          <div key={r.id} className="reaction-toast">
+            <strong>{r.username}:</strong> {r.text}
+          </div>
+        ))}
+      </div>
+    );
+
   if (stage === STAGE.MENU) {
     return (
       <div className="container page" style={{ maxWidth: 480 }}>
@@ -144,6 +202,7 @@ export default function Duel() {
     const problem = problems[index];
     return (
       <div className="container page" style={{ maxWidth: 640 }}>
+        <ReactionToasts />
         <div className="card" style={{ marginBottom: 16 }}>
           <div style={{ marginBottom: 8, fontSize: 13, color: "var(--text-muted)" }}>{t.duel.opponentsProgress}</div>
           {opponents.map((o) => {
@@ -192,6 +251,8 @@ export default function Duel() {
             </button>
           )}
         </div>
+
+        <ReactionBar onSend={sendReaction} />
       </div>
     );
   }
@@ -199,9 +260,11 @@ export default function Duel() {
   if (stage === STAGE.DONE_WAITING) {
     return (
       <div className="container page" style={{ maxWidth: 480 }}>
+        <ReactionToasts />
         <div className="card" style={{ textAlign: "center" }}>
           <p>{t.duel.finished}</p>
         </div>
+        <ReactionBar onSend={sendReaction} />
       </div>
     );
   }
@@ -213,6 +276,7 @@ export default function Duel() {
   return (
     <div className="container page" style={{ maxWidth: 560 }}>
       {won && <Confetti />}
+      <ReactionToasts />
       <div className="card">
         <h2 style={{ marginBottom: 20 }}>{t.duel.resultsTitle}</h2>
         <table>
@@ -237,10 +301,22 @@ export default function Duel() {
             ))}
           </tbody>
         </table>
-        <button className="btn btn-primary" style={{ marginTop: 20 }} onClick={() => navigate("/")}>
-          {t.duel.backToMenu}
-        </button>
+
+        <div style={{ display: "flex", gap: 12, marginTop: 20, flexWrap: "wrap" }}>
+          <button className="btn btn-primary" onClick={requestRematch} disabled={rematchRequested}>
+            {rematchRequested
+              ? rematchStatus
+                ? `${t.duel.rematchWaiting} (${rematchStatus.readyCount}/${rematchStatus.total})`
+                : t.duel.rematchWaiting
+              : t.duel.rematch}
+          </button>
+          <button className="btn btn-secondary" onClick={() => navigate("/")}>
+            {t.duel.backToMenu}
+          </button>
+        </div>
       </div>
+
+      <ReactionBar onSend={sendReaction} />
     </div>
   );
 }
