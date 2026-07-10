@@ -17,11 +17,14 @@
   --text-muted: #8b97b8;
 
   --accent: #ffb020;
+  --accent-text: #ffb020;
   --accent-dim: #7a5a1a;
   --success: #3ddc97;
   --danger: #ff5c6c;
   --grid-line: rgba(255, 255, 255, 0.035);
   --navbar-bg: rgba(20, 27, 46, 0.78);
+  --overlay-soft: rgba(255, 255, 255, 0.05);
+  --card-shadow: 0 14px 34px -18px rgba(0, 0, 0, 0.6);
 
   --font-display: "Oswald", sans-serif;
   --font-body: "Inter", sans-serif;
@@ -38,16 +41,19 @@
   --bg: #eef1f7;
   --surface: #ffffff;
   --surface-2: #f5f7fb;
-  --border: #dde3ee;
+  --border: #d6dceb;
   --text: #121826;
   --text-muted: #5c6579;
 
-  --accent: #b8720a;
+  --accent: #ffb020;
+  --accent-text: #b8720a;
   --accent-dim: #f2dcae;
   --success: #158a5d;
   --danger: #d13a4d;
-  --grid-line: rgba(18, 24, 38, 0.045);
+  --grid-line: rgba(18, 24, 38, 0.05);
   --navbar-bg: rgba(255, 255, 255, 0.78);
+  --overlay-soft: rgba(18, 24, 38, 0.045);
+  --card-shadow: 0 14px 30px -16px rgba(30, 41, 71, 0.18);
 
   color-scheme: light;
 }
@@ -82,6 +88,16 @@ body {
     linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
   background-size: auto, auto, 42px 42px, 42px 42px;
   background-attachment: fixed;
+}
+
+/* На белом фоне слабые цветные пятна почти не читаются — для светлой
+   темы делаем свечение чуть насыщеннее и добавляем мягкий верхний штрих */
+[data-theme="light"] body {
+  background-image:
+    radial-gradient(circle at 12% -5%, rgba(184, 114, 10, 0.14), transparent 42%),
+    radial-gradient(circle at 88% 10%, rgba(21, 138, 93, 0.10), transparent 40%),
+    linear-gradient(var(--grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
 }
 
 h1,
@@ -137,7 +153,7 @@ button {
   font-family: var(--font-display);
   font-size: 20px;
   letter-spacing: 0.04em;
-  color: var(--accent);
+  color: var(--accent-text);
   text-decoration: none;
 }
 
@@ -169,7 +185,7 @@ button {
 }
 
 .brand-mark {
-  color: var(--accent);
+  color: var(--accent-text);
   flex-shrink: 0;
 }
 
@@ -205,11 +221,11 @@ button {
 
 .nav-link:hover {
   color: var(--text);
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--overlay-soft);
 }
 
 .nav-link.active {
-  color: var(--accent);
+  color: var(--accent-text);
   background: rgba(255, 176, 32, 0.12);
 }
 
@@ -311,7 +327,7 @@ button {
 }
 
 .account-dropdown a.active {
-  color: var(--accent);
+  color: var(--accent-text);
 }
 
 .account-dropdown .logout-item {
@@ -361,7 +377,7 @@ button {
 }
 
 .theme-toggle:hover {
-  color: var(--accent);
+  color: var(--accent-text);
   border-color: var(--accent);
   transform: rotate(15deg);
 }
@@ -372,7 +388,7 @@ button {
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 24px;
-  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.03) inset, 0 14px 34px -18px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 1px 0 var(--overlay-soft) inset, var(--card-shadow);
   position: relative;
   overflow: hidden;
 }
@@ -492,7 +508,7 @@ label {
   font-variant-numeric: tabular-nums;
   font-size: 40px;
   font-weight: 700;
-  color: var(--accent);
+  color: var(--accent-text);
   line-height: 1;
 }
 
@@ -646,7 +662,7 @@ th {
   font-family: var(--font-mono);
   font-size: 12px;
   letter-spacing: 0.06em;
-  color: var(--accent);
+  color: var(--accent-text);
   background: rgba(255, 176, 32, 0.1);
   border: 1px solid var(--accent-dim);
   padding: 6px 14px;
@@ -661,7 +677,7 @@ th {
 }
 
 .hero .accent {
-  color: var(--accent);
+  color: var(--accent-text);
 }
 
 .hero p {
@@ -781,7 +797,7 @@ textarea:focus-visible {
   display: inline-block;
   font-family: var(--font-mono);
   font-size: 13px;
-  color: var(--accent);
+  color: var(--accent-text);
   border: 1px solid var(--border);
   border-radius: 999px;
   padding: 3px 10px;
@@ -834,7 +850,7 @@ textarea:focus-visible {
 
 .topic-pill:hover {
   border-color: var(--accent);
-  color: var(--accent);
+  color: var(--accent-text);
 }
 
 @media (max-width: 760px) {
