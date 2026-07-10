@@ -38,6 +38,12 @@ body,
   height: 100%;
 }
 
+html,
+body {
+  overflow-x: hidden;
+  width: 100%;
+}
+
 body {
   margin: 0;
   background: var(--bg);
@@ -80,22 +86,27 @@ button {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 24px;
+  flex-wrap: wrap;
+  gap: 10px 0;
+  padding: 14px 16px;
   border-bottom: 1px solid var(--border);
   background: var(--surface);
 }
 
 .navbar .brand {
   font-family: var(--font-display);
-  font-size: 22px;
+  font-size: 20px;
   letter-spacing: 0.04em;
   color: var(--accent);
 }
 
 .navbar nav {
   display: flex;
-  gap: 20px;
+  flex-wrap: wrap;
+  gap: 10px 16px;
   align-items: center;
+  justify-content: flex-end;
+  row-gap: 8px;
 }
 
 .navbar nav a,
@@ -103,9 +114,10 @@ button {
   background: none;
   border: none;
   color: var(--text-muted);
-  font-size: 14px;
+  font-size: 13px;
   text-decoration: none;
   padding: 0;
+  white-space: nowrap;
 }
 
 .navbar nav a:hover,
@@ -397,10 +409,44 @@ th {
 }
 
 @media (max-width: 640px) {
+  .container {
+    padding: 0 14px;
+  }
+
+  .card {
+    padding: 16px;
+  }
+
   .mode-grid {
     grid-template-columns: 1fr;
   }
   .hero h1 {
     font-size: 32px;
+  }
+  .hero {
+    padding: 40px 0 24px;
+  }
+
+  .timer-display {
+    font-size: 28px;
+  }
+
+  /* Таблицы (рейтинг, история, дуэли, админка) прокручиваются сами по себе
+     по горизонтали, а не раздвигают всю страницу вширь */
+  table {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .opponent-name {
+    width: 84px;
+    font-size: 12px;
+  }
+
+  .lang-switch button {
+    padding: 5px 9px;
   }
 }
