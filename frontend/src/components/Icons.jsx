@@ -104,6 +104,29 @@ export function IconLogin(props) {
   );
 }
 
+export function IconSun(props) {
+  return (
+    <svg {...base} {...props}>
+      <circle cx="12" cy="12" r="4.2" />
+      <path d="M12 2.5v2.2" />
+      <path d="M12 19.3v2.2" />
+      <path d="M4.2 4.2l1.6 1.6" />
+      <path d="M18.2 18.2l1.6 1.6" />
+      <path d="M2.5 12h2.2" />
+      <path d="M19.3 12h2.2" />
+      <path d="M4.2 19.8l1.6-1.6" />
+      <path d="M18.2 5.8l1.6-1.6" />
+    </svg>
+  );
+}
+
+export function IconMoon(props) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z" />
+    </svg>
+  );
+}
 export function IconUserPlus(props) {
   return (
     <svg {...base} {...props}>

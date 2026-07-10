@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useI18n } from "../i18n";
 import { useAuth } from "../context/AuthContext";
+import { useTheme } from "../context/ThemeContext";
 import {
   IconTimer,
   IconSwords,
@@ -13,6 +14,8 @@ import {
   IconChevronDown,
   IconLogin,
   IconUserPlus,
+  IconSun,
+  IconMoon,
 } from "./Icons";
 
 function BrandMark() {
@@ -28,6 +31,7 @@ function BrandMark() {
 export default function Navbar() {
   const { t, lang, setLanguage } = useI18n();
   const { user, logout } = useAuth();
+  const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -111,6 +115,15 @@ export default function Navbar() {
             </Link>
           </>
         )}
+
+        <button
+          className="theme-toggle"
+          onClick={toggleTheme}
+          aria-label={theme === "dark" ? "Включить светлую тему" : "Включить тёмную тему"}
+          title={theme === "dark" ? "Светлая тема" : "Тёмная тема"}
+        >
+          {theme === "dark" ? <IconSun /> : <IconMoon />}
+        </button>
 
         <div className="lang-switch">
           <button className={lang === "ru" ? "active" : ""} onClick={() => setLanguage("ru")}>
