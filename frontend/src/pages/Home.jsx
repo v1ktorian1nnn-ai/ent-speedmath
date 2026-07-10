@@ -26,6 +26,35 @@ export default function Home() {
           </div>
         </div>
       </div>
+
+      <div className="steps-row">
+        <div className="step-item">
+          <span className="step-num">01</span>
+          <h3>{t.hero.step1Title}</h3>
+          <p>{t.hero.step1Text}</p>
+        </div>
+        <div className="step-item">
+          <span className="step-num">02</span>
+          <h3>{t.hero.step2Title}</h3>
+          <p>{t.hero.step2Text}</p>
+        </div>
+        <div className="step-item">
+          <span className="step-num">03</span>
+          <h3>{t.hero.step3Title}</h3>
+          <p>{t.hero.step3Text}</p>
+        </div>
+      </div>
+
+      <div className="topics-strip">
+        <div className="topics-label">{t.hero.topicsLabel}</div>
+        <div className="topics-pills">
+          {t.hero.topics.map((topic) => (
+            <span className="topic-pill" key={topic}>
+              {topic}
+            </span>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
