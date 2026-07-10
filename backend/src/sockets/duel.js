@@ -1,6 +1,6 @@
 const prisma = require("../config/db");
 const { verifySocketToken } = require("../middleware/auth");
-const { pickRandomProblems } = require("../routes/problems");
+const { pickRandomProblems, getRecentlySeenProblemIds } = require("../routes/problems");
 
 const PROBLEMS_PER_DUEL = 8;
 const GROUP_MIN_PLAYERS = 3;
@@ -117,7 +117,14 @@ async function startGroupDuel(io) {
 }
 
 async function createAndStartDuel(io, mode, players) {
-  const problems = await pickRandomProblems(PROBLEMS_PER_DUEL);
+  // Чтобы задачи не повторялись у игроков, исключаем те, что недавно видел
+  // ЛЮБОЙ из участников — набор всё равно общий для честности соревнования.
+  const excludeArrays = await Promise.all(
+    players.map((p) => getRecentlySeenProblemIds(p.user.id))
+  );
+  const excludeIds = [...new Set(excludeArrays.flat())];
+
+  const problems = await pickRandomProblems(PROBLEMS_PER_DUEL, undefined, excludeIds);
 
   const duel = await prisma.duel.create({
     data: {

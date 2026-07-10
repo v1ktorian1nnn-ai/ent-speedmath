@@ -25,19 +25,55 @@ router.get("/topics", requireAuth, async (req, res) => {
   res.json(rows.map((r) => r.topic));
 });
 
-// Достаём N случайных активных задач (используется и для практики, и для дуэлей)
-async function pickRandomProblems(count, topic) {
+function shuffle(arr) {
+  return [...arr].sort(() => Math.random() - 0.5);
+}
+
+// Достаём N случайных активных задач, по возможности исключая те,
+// что переданы в excludeIds (недавно виденные пользователем/участниками).
+// Если после исключения задач не хватает — добираем из исключённых,
+// чтобы не сломать выдачу на маленьком банке.
+async function pickRandomProblems(count, topic, excludeIds = []) {
   const where = { isActive: true, ...(topic ? { topic } : {}) };
   const all = await prisma.problem.findMany({ where, select: { id: true } });
-  const shuffled = all.sort(() => Math.random() - 0.5);
-  const ids = shuffled.slice(0, count).map((p) => p.id);
+
+  const excludeSet = new Set(excludeIds);
+  const fresh = shuffle(all.filter((p) => !excludeSet.has(p.id)));
+  const alreadySeen = shuffle(all.filter((p) => excludeSet.has(p.id)));
+
+  const ids = [...fresh, ...alreadySeen].slice(0, count).map((p) => p.id);
   return prisma.problem.findMany({ where: { id: { in: ids } } });
+}
+
+// Собирает id задач, которые пользователь недавно видел — и в тренировках,
+// и в дуэлях — чтобы не показывать их снова, пока не покажем всё остальное.
+async function getRecentlySeenProblemIds(userId, limit = 40) {
+  const recentAttempts = await prisma.practiceAttempt.findMany({
+    where: { userId },
+    orderBy: { createdAt: "desc" },
+    take: limit,
+    select: { problemId: true },
+  });
+
+  const recentDuels = await prisma.duelParticipant.findMany({
+    where: { userId },
+    orderBy: { id: "desc" },
+    take: 5,
+    include: { duel: { select: { problemIds: true } } },
+  });
+
+  const duelIds = recentDuels.flatMap((dp) =>
+    Array.isArray(dp.duel?.problemIds) ? dp.duel.problemIds : []
+  );
+
+  return [...new Set([...recentAttempts.map((a) => a.problemId), ...duelIds])];
 }
 
 router.get("/practice-set", requireAuth, async (req, res) => {
   const count = Math.min(parseInt(req.query.count, 10) || 10, 30);
   const topic = req.query.topic || undefined;
-  const problems = await pickRandomProblems(count, topic);
+  const excludeIds = await getRecentlySeenProblemIds(req.user.id);
+  const problems = await pickRandomProblems(count, topic, excludeIds);
 
   // Не отдаём правильный индекс на клиент до ответа
   const safe = problems.map(({ correctIndex, ...rest }) => rest);
@@ -111,4 +147,4 @@ router.delete("/admin/:id", requireAuth, requireAdmin, async (req, res) => {
   res.json({ ok: true });
 });
 
-module.exports = { router, pickRandomProblems };
+module.exports = { router, pickRandomProblems, getRecentlySeenProblemIds };
